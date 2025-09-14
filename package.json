@@ -1,0 +1,29 @@
+{
+  "name": "live-translation-app",
+  "version": "1.0.0",
+  "description": "Real-time language translation app with voice cloning and emotion preservation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "webpack --mode production",
+    "test": "jest"
+  },
+  "keywords": ["translation", "real-time", "voice", "speech", "ai"],
+  "author": "Live Translation Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "axios": "^1.5.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "jest": "^29.6.2"
+  }
+}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Translation - Real-time Voice Translation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-globe-americas"></i>
+                    <span>Live Translation</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" id="settingsBtn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="btn-icon" id="historyBtn" title="Conversation History">
+                        <i class="fas fa-history"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Room Connection Panel -->
+            <div class="room-panel" id="roomPanel">
+                <div class="room-info">
+                    <h3><i class="fas fa-users"></i> Conversation Room</h3>
+                    <div class="room-status" id="roomStatus">
+                        <span class="status-text">Not connected</span>
+                    </div>
+                </div>
+                <div class="room-controls">
+                    <input type="text" id="roomIdInput" placeholder="Enter room ID or leave empty to create new" class="room-input">
+                    <input type="text" id="userNameInput" placeholder="Your name" class="room-input">
+                    <button class="btn-primary" id="joinRoomBtn">Join/Create Room</button>
+                    <button class="btn-secondary" id="shareRoomBtn" style="display: none;">Share Link</button>
+                </div>
+                <div class="connected-users" id="connectedUsers" style="display: none;">
+                    <h4>Connected Users:</h4>
+                    <div class="users-list" id="usersList"></div>
+                </div>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="language-selector">
+                <div class="language-card">
+                    <label>Your Language</label>
+                    <select id="sourceLanguage" class="language-select">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="ru">Russian</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ko">Korean</option>
+                        <option value="zh">Chinese</option>
+                        <option value="ar">Arabic</option>
+                        <option value="hi">Hindi</option>
+                    </select>
+                </div>
+                
+                <div class="listening-mode">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="ambientListening">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">Ambient Listening</span>
+                    </label>
+                    <small>Listen to others speaking around you</small>
+                </div>
+                
+                <div class="language-card">
+                    <label>Output Mode</label>
+                    <select id="outputMode" class="language-select">
+                        <option value="both">Text + Audio</option>
+                        <option value="text">Text Only</option>
+                        <option value="audio">Audio Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Translation Interface -->
+            <div class="translation-interface">
+                <!-- Input Section -->
+                <div class="translation-panel input-panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-microphone"></i> Speaking</h3>
+                        <div class="voice-indicator" id="voiceIndicator">
+                            <div class="voice-wave"></div>
+                            <div class="voice-wave"></div>
+                            <div class="voice-wave"></div>
+                        </div>
+                    </div>
+                    <div class="text-display" id="inputText">
+                        <p class="placeholder">Click the microphone to start speaking...</p>
+                    </div>
+                    <div class="panel-controls">
+                        <button class="mic-button" id="micButton" title="Start/Stop Recording">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="btn-secondary" id="clearBtn" title="Clear">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Translation Feed -->
+                <div class="translation-panel output-panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-comments"></i> Live Conversation</h3>
+                        <div class="translation-status" id="translationStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">Ready</span>
+                        </div>
+                    </div>
+                    <div class="conversation-feed" id="conversationFeed">
+                        <p class="placeholder">Join a room to see live translations...</p>
+                    </div>
+                    <div class="panel-controls">
+                        <button class="btn-primary" id="playButton" title="Play Last Translation">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn-secondary" id="copyBtn" title="Copy Last Translation">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn-secondary" id="clearFeedBtn" title="Clear Feed">
+                            <i class="fas fa-broom"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Stats -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Latency: <span id="latencyDisplay">0ms</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-signal"></i>
+                    <span>Quality: <span id="qualityDisplay">Excellent</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <span>Room: <span id="roomUsersCount">0</span> users</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-language"></i>
+                    <span>Mode: <span id="currentMode">Solo</span></span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-cog"></i> Settings</h2>
+                    <button class="close-btn" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label>Voice Settings</label>
+                        <div class="setting-item">
+                            <span>Speech Rate</span>
+                            <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1">
+                            <span id="rateValue">1.0x</span>
+                        </div>
+                        <div class="setting-item">
+                            <span>Voice Pitch</span>
+                            <input type="range" id="voicePitch" min="0" max="2" step="0.1" value="1">
+                            <span id="pitchValue">1.0</span>
+                        </div>
+                        <div class="setting-item">
+                            <span>Volume</span>
+                            <input type="range" id="voiceVolume" min="0" max="1" step="0.1" value="1">
+                            <span id="volumeValue">100%</span>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Interface</label>
+                        <div class="setting-item">
+                            <span>Dark Mode</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="darkMode">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span>Auto-play Translation</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="autoPlay" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div class="modal" id="historyModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-history"></i> Conversation History</h2>
+                    <button class="close-btn" id="closeHistory">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="history-list" id="historyList">
+                        <!-- History items will be populated here -->
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn-secondary" id="exportHistory">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="btn-danger" id="clearHistory">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Initializing translation engine...</p>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div class="toast" id="toast">
+            <div class="toast-content">
+                <i class="toast-icon"></i>
+                <span class="toast-message"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="voice-engine.js"></script>
+    <script src="performance-optimizer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
